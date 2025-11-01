@@ -10,12 +10,7 @@ from deep_trader.utils.config import get_settings
 import os
 
 
-_AGENT_CONFIG = load_yaml_config("agents/research_agent_config.yaml")
-
-
-def create_research_agent():
-    settings = get_settings()
-
+def _configure_langsmith_tracing(settings):
     if settings.langsmith_tracing:
         if not settings.langsmith_endpoint:
             raise ValueError("LANGSMITH_ENDPOINT is not set in .env or config.py")
@@ -28,6 +23,15 @@ def create_research_agent():
         os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
         os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
         os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
+
+
+_AGENT_CONFIG = load_yaml_config("agents/research_agent_config.yaml")
+
+
+def create_research_agent():
+    settings = get_settings()
+
+    _configure_langsmith_tracing(settings)
 
     model_name = _AGENT_CONFIG.get("model")
     instructions = _AGENT_CONFIG.get("instructions")
