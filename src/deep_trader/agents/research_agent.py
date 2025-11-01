@@ -8,6 +8,7 @@ from deep_trader.tools.search_tool import internet_search
 from deep_trader.utils.yaml_loader import load_yaml_config
 from deep_trader.utils.config import get_settings
 import os
+from deep_trader.utils.agent_config_loader import AgentConfigLoader
 
 
 def _configure_langsmith_tracing(settings):
@@ -25,22 +26,14 @@ def _configure_langsmith_tracing(settings):
         os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
 
 
-_AGENT_CONFIG = load_yaml_config("agents/research_agent_config.yaml")
-
-
 def create_research_agent():
     settings = get_settings()
 
     _configure_langsmith_tracing(settings)
 
-    model_name = _AGENT_CONFIG.get("model")
-    instructions = _AGENT_CONFIG.get("instructions")
-
-    if not model_name:
-        raise ValueError("Missing 'model' in research_agent_config.yaml")
-
-    if not instructions:
-        raise ValueError("Missing 'instructions' in research_agent_config.yaml")
+    config_loader = AgentConfigLoader("agents/research_agent_config.yaml")
+    model_name = config_loader.get_model_name()
+    instructions = config_loader.get_instructions()
 
     store = InMemoryStore()
 
