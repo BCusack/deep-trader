@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     """Settings model for all environment-driven configuration."""
 
     tavily_api_key: Optional[str] = None
+    langsmith_tracing: Optional[bool] = False
+    langsmith_endpoint: Optional[str] = None
+    langsmith_api_key: Optional[str] = None
+    langsmith_project: Optional[str] = None
 
     model_config = SettingsConfigDict(
         env_file=_first_existing_env(),

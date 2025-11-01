@@ -30,7 +30,6 @@ def main():
     output_file = outputs_dir / f"research_{timestamp}.md"
     with output_file.open("w", encoding="utf-8") as file:
         file.write(f"# Research Report\n\n")
-        file.write(f"**Prompt:** {user_message}\n\n")
         file.write(content)
 
     print(f"Report saved to {output_file}")
