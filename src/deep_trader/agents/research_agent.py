@@ -1,25 +1,49 @@
 # System prompt to steer the agent to be an expert researcher
 from deepagents import create_deep_agent
+from langchain.agents.middleware import TodoListMiddleware
+from deepagents.middleware.filesystem import FilesystemMiddleware
+from langgraph.store.memory import InMemoryStore
 
 from deep_trader.tools.search_tool import internet_search
-from dotenv import load_dotenv
+from deep_trader.utils.yaml_loader import load_yaml_config
+from deep_trader.utils.config import get_settings
+import os
 
-load_dotenv()
+
+_AGENT_CONFIG = load_yaml_config("agents/research_agent_config.yaml")
 
 
 def create_research_agent():
-    research_instructions = """You are an expert researcher. Your job is to conduct thorough research and then write a polished report.
+    settings = get_settings()
 
-    You have access to an internet search tool as your primary means of gathering information.
+    if settings.langsmith_tracing:
+        if not settings.langsmith_endpoint:
+            raise ValueError("LANGSMITH_ENDPOINT is not set in .env or config.py")
+        if not settings.langsmith_api_key:
+            raise ValueError("LANGSMITH_API_KEY is not set in .env or config.py")
+        if not settings.langsmith_project:
+            raise ValueError("LANGSMITH_PROJECT is not set in .env or config.py")
 
-    ## `internet_search`
+        os.environ["LANGSMITH_TRACING"] = "true"
+        os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
+        os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
+        os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
 
-    Use this to run an internet search for a given query. You can specify the max number of results to return, the topic, and whether raw content should be included.
-    """
+    model_name = _AGENT_CONFIG.get("model")
+    instructions = _AGENT_CONFIG.get("instructions")
+
+    if not model_name:
+        raise ValueError("Missing 'model' in research_agent_config.yaml")
+
+    if not instructions:
+        raise ValueError("Missing 'instructions' in research_agent_config.yaml")
+
+    store = InMemoryStore()
 
     agent = create_deep_agent(
-        model="gemini-2.5-pro",
+        model=model_name,
         tools=[internet_search],
-        system_prompt=research_instructions
+        system_prompt=instructions,
+        store=store,
     )
     return agent
