@@ -2,24 +2,25 @@
 from deepagents import create_deep_agent
 
 from deep_trader.tools.search_tool import internet_search
-from dotenv import load_dotenv
+from deep_trader.utils.yaml_loader import load_yaml_config
 
-load_dotenv()
+
+_AGENT_CONFIG = load_yaml_config("agents/research_agent_config.yaml")
 
 
 def create_research_agent():
-    research_instructions = """You are an expert researcher. Your job is to conduct thorough research and then write a polished report.
+    model_name = _AGENT_CONFIG.get("model")
+    instructions = _AGENT_CONFIG.get("instructions")
 
-    You have access to an internet search tool as your primary means of gathering information.
+    if not model_name:
+        raise ValueError("Missing 'model' in research_agent_config.yaml")
 
-    ## `internet_search`
-
-    Use this to run an internet search for a given query. You can specify the max number of results to return, the topic, and whether raw content should be included.
-    """
+    if not instructions:
+        raise ValueError("Missing 'instructions' in research_agent_config.yaml")
 
     agent = create_deep_agent(
-        model="gemini-2.5-pro",
+        model=model_name,
         tools=[internet_search],
-        system_prompt=research_instructions
+        system_prompt=instructions,
     )
     return agent

@@ -162,6 +162,7 @@ dependencies = [
     { name = "deepagents" },
     { name = "langchain-google-vertexai" },
     { name = "pydantic-settings" },
+    { name = "pyyaml" },
     { name = "tavily-python" },
 ]
 
@@ -170,6 +171,7 @@ requires-dist = [
     { name = "deepagents", specifier = ">=0.2.4" },
     { name = "langchain-google-vertexai", specifier = ">=3.0.1" },
     { name = "pydantic-settings", specifier = ">=2.11.0" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "tavily-python", specifier = ">=0.7.12" },
 ]
 

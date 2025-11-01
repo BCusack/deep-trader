@@ -1,8 +1,21 @@
 """Application configuration loaded from environment variables."""
 from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+PACKAGE_DIR = Path(__file__).resolve().parents[1]
+ROOT_DIR = PACKAGE_DIR.parent.parent
+ENV_PATHS = [PACKAGE_DIR / ".env", ROOT_DIR / ".env"]
+
+
+def _first_existing_env() -> str | None:
+    for candidate in ENV_PATHS:
+        if candidate.is_file():
+            return str(candidate)
+    return None
 
 
 class Settings(BaseSettings):
@@ -11,7 +24,7 @@ class Settings(BaseSettings):
     tavily_api_key: Optional[str] = None
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_first_existing_env(),
         env_file_encoding="utf-8",
         extra="ignore",
     )
