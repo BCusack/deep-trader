@@ -15,13 +15,10 @@ class AgentRunner:
         if not user_message:
             raise SystemExit("No prompt provided. Aborting.")
 
-        print("\nAgent Response (streaming):\n")
-        full_content = ""
-        for chunk in self.agent.stream({"messages": [{"role": "user", "content": user_message}]}):
-            if "messages" in chunk and chunk["messages"]:
-                content_chunk = chunk["messages"][-1].content
-                print(content_chunk, end="", flush=True)
-                full_content += content_chunk
+        print("\nAgent Response:\n")
+        result = self.agent.invoke({"messages": [{"role": "user", "content": user_message}]})
+        full_content = result["messages"][-1].content
+        print(full_content)
         return full_content
 
     def save_report(self, user_message: str, content: str):
