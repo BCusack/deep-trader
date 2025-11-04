@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     """Settings model for all environment-driven configuration."""
 
     tavily_api_key: Optional[str] = None
+    # Bybit credentials for MCP server (optional; MCP can also run read-only)
+    bybit_api_key: Optional[str] = None
+    bybit_api_secret: Optional[str] = None
     langsmith_tracing: Optional[bool] = False
     langsmith_endpoint: Optional[str] = None
     langsmith_api_key: Optional[str] = None
